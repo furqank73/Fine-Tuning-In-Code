@@ -1,6 +1,6 @@
 # Fine-Tuning notebooks
 
-This folder contains five notebooks demonstrating different ways to adapt Transformer models to text tasks. They cover ordinary fine-tuning, Hugging Face's higher-level training tools, parameter-efficient adapters, and transferring a model between datasets.
+This folder contains seven notebooks demonstrating different ways to adapt Transformer models to text tasks. They cover ordinary fine-tuning, Hugging Face's higher-level training tools, parameter-efficient adapters, LoRA/QLoRA updates, and transferring a model between datasets.
 
 ## Notebooks
 
@@ -44,7 +44,28 @@ This folder contains five notebooks demonstrating different ways to adapt Transf
 
 **Main idea:** The base DistilBERT weights stay frozen; the adapters and classification head learn the sentiment task. The saved weights are not a complete standalone model: loading them requires the compatible DistilBERT base model and matching model structure.
 
-### 5. [Transformer_Fine_Tuning_AG_News_to_IMDB (1).ipynb](./Transformer_Fine_Tuning_AG_News_to_IMDB%20(1).ipynb)
+### 5. [LoRA_PyTorch_and_HuggingFace_Practice.ipynb](./LoRA_PyTorch_and_HuggingFace_Practice.ipynb)
+
+**Goal:** Train an IMDb sentiment classifier using LoRA in two ways: a manual PyTorch implementation and a Hugging Face PEFT workflow.
+
+**What happens:**
+1. Load a pretrained DistilBERT model and tokenizer for binary sentiment classification.
+2. Create LoRA update matrices for selected attention layers in a manual PyTorch setup.
+3. Train the LoRA weights with a custom training loop and compare the result to a full-model update.
+4. Repeat the same task using Hugging Face's `LoraConfig` and `Trainer` integration.
+5. Use the same model family, dataset, and target layers so the two approaches are directly comparable.
+
+**Main idea:** LoRA learns a small set of low-rank update matrices instead of changing the full pretrained backbone. This keeps fine-tuning lighter and is a common parameter-efficient alternative to full fine-tuning.
+
+### 6. [QLoRA_IMDb_Beginner_Practice.ipynb](./QLoRA_IMDb_Beginner_Practice.ipynb)
+
+**Goal:** Classify IMDb reviews with QLoRA, a quantized version of low-rank adaptation.
+
+**What happens:** The notebook loads a pretrained DistilBERT model in 4-bit precision, keeps the frozen base model quantized, adds small trainable LoRA layers, and trains the adapter weights together with a classification head. It uses PyTorch, Transformers, bitsandbytes, and PEFT to keep the workflow beginner-friendly while still demonstrating an efficient fine-tuning pattern.
+
+**Main idea:** QLoRA reduces the memory footprint of the base model by loading it in lower precision while still learning task-specific adapters. This makes large-model adaptation more practical on limited hardware while preserving most of the pretrained knowledge.
+
+### 7. [Transformer_Fine_Tuning_AG_News_to_IMDB (1).ipynb](./Transformer_Fine_Tuning_AG_News_to_IMDB%20(1).ipynb)
 
 **Goal:** Teach transfer learning by training a Transformer classifier on AG News, then transferring its learned representations to IMDb sentiment classification.
 
@@ -62,7 +83,8 @@ This folder contains five notebooks demonstrating different ways to adapt Transf
 1. Start with **Full-Fine-Tuning** for the basic classification pipeline.
 2. Read **HuggingFace Transformer Fine-Tuning Explained** to compare a manual training loop with `Trainer` and to distinguish classification from masked language modeling.
 3. Compare the two **DistilBERT Adapter** notebooks to see the same parameter-efficient method applied to four-class news and binary sentiment tasks.
-4. Finish with **Transformer Fine-Tuning AG News to IMDB** for a source-to-target transfer experiment and a comparison of full versus classifier-only updates.
+4. Continue with **LoRA Practice** and **QLoRA Beginner Practice** to see parameter-efficient adaptation in both standard and quantized forms.
+5. Finish with **Transformer Fine-Tuning AG News to IMDB** for a source-to-target transfer experiment and a comparison of full versus classifier-only updates.
 
 ## Running the notebooks
 
